@@ -24,14 +24,19 @@ class WorkingMachinesSimulation():
         
     def BreakDown(self):
         
+        
         self.time=heapq.heappop(self.time_break_heap)
         self.machines_down+=1
         
         if self.machines_down==1:
-            t=self.repair_distribution_function(self.repair_factor)
+            t=self.repair_distribution_function()
             self.repair_time=self.time+t
+            
+            t1= self.working_distribution_function(self.alpha,self.mean)
+            heapq.heappush(self.time_break_heap,self.time+t1)
             self.spares-=1
-            return True
+            
+            return False
             
             
             
@@ -39,19 +44,21 @@ class WorkingMachinesSimulation():
             t= self.working_distribution_function(self.alpha,self.mean)
             heapq.heappush(self.time_break_heap,self.time+t)
             self.spares-=1
-            return True
+            return False
         
         elif  self.machines_down==self.spares+1:
-            return False
+            return True
         
             
     def Reapair(self):
         
         self.time=self.repair_time
+        
         self.machines_down-=1
+        self.spares+=1
         
         if self.machines_down>0:
-            t=self.repair_distribution_function(self.repair_factor)
+            t=self.repair_distribution_function()
             self.repair_time=self.time+t
             
         else:
@@ -68,6 +75,8 @@ class WorkingMachinesSimulation():
 
         return self.time
 
+        
+        
         
     #  trabajando [] n-1
     #  repuesto  =0
